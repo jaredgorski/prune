@@ -24,7 +24,7 @@ Interactive git branch pruning tool
 Since there is no installer yet, simply clone this repository to your computer and add the following to your `.bashrc` file:
 
 ```
-export PRUNEPATH=<path to local clone>
+export PRUNEPATH=<path to cloned directory>
 source $PRUNEPATH/main.sh
 ```
 
