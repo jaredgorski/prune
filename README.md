@@ -32,3 +32,6 @@ source $PRUNEPATH/main.sh
 - **local prune** `prune -l -f` : Simply deletes local branches that do not exist on the remote (requires `-f`)
 
 **NOTE:** Prune currently requires `gnu-sed` to be installed. If you do not have it, you will be prompted to install it via Homebrew.
+
+
+Please feel free to open issues or ask questions! I am available at [jaredgorski6@gmail.com](mailto:jaredgorski6@gmail.com)
