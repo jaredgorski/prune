@@ -34,7 +34,7 @@ function prune() {
       # Argument variables for local user
       argsEnv=local
       ghprune_interactiveFlag=off
-      ghprune_hardFlag=off
+      ghprune_forceFlag=off
       ghprune_softFlag=off
       ghprune_allFlag=off
       ghprune_localFlag=off
@@ -47,12 +47,14 @@ function prune() {
       do
         case "$1" in
           -i) ghprune_interactiveFlag=on; ghprune_willHandleLocalArgs=1;;
-          -h) ghprune_hardFlag=on; ghprune_willHandleLocalArgs=1;;
           -s) ghprune_softFlag=on; ghprune_willHandleLocalArgs=1;;
           -a) ghprune_allFlag=on; ghprune_willHandleLocalArgs=1;;
           -l) ghprune_localFlag=on; ghprune_willHandleLocalArgs=1;;
           -r) ghprune_remoteFlag=on; ghprune_willHandleLocalArgs=1;;
           -u) ghprune_handleUser "$@"; ghprune_willHandleLocalArgs=0; break;;
+          -f) ghprune_forceFlag=on; ghprune_willHandleLocalArgs=1;;
+          -lf) ghprune_localFlag=on; ghprune_forceFlag=on; ghprune_willHandleLocalArgs=1;;
+          -fl) ghprune_localFlag=on; ghprune_forceFlag=on; ghprune_willHandleLocalArgs=1;;
           --) shift; break;;
           -*) echo >&2 "\n\tusage: $0 [-i, -h, -s, -a, -r, -u, login, logout]\n"
               break;;
@@ -63,7 +65,7 @@ function prune() {
 
       if [[ $ghprune_willHandleLocalArgs -gt 0 ]]
       then
-        ghprune_handleArgs "$argsEnv" "$ghprune_interactiveFlag" "$ghprune_hardFlag" "$ghprune_softFlag" "$ghprune_allFlag" "$ghprune_localFlag" "$ghprune_remoteFlag"
+        ghprune_handleArgs "$argsEnv" "$ghprune_interactiveFlag" "$ghprune_forceFlag" "$ghprune_softFlag" "$ghprune_allFlag" "$ghprune_localFlag" "$ghprune_remoteFlag"
       fi
     else
       echo "\n\tERROR: This directory is not a git repository. Please navigate to a git repository in order to use prune locally\n"
@@ -75,10 +77,14 @@ function ghprune_handleArgs() {
   
   #WIP
 
-  if [[ $6 = "on" ]]
+  if [[ $6 = "on" ]] && [[ $3 = "on" ]]
   then
-    source ./prune.sh
+    source $PRUNEPATH/prune.sh
     ghprune_prunePrunableBranches_local
+  elif [[ $6 = "on" ]]
+  then
+    echo "\n\tWARNING: This command permanently deletes local branches. Make sure your work is safe."
+    echo "\n\tAs a safety precaution, you must include the force flag [-f] with your command.\n"
   fi
 }
 
@@ -101,11 +107,11 @@ function ghprune_handleUser() {
 }
 
 function ghprune_handleLogin() {
-  source ./auth.sh
+  source $PRUNEPATH/auth.sh
   ghprune_userLogin
 }
 
 function ghprune_handleLogout() {
-  source ./auth.sh
+  source $PRUNEPATH/auth.sh
   ghprune_userLogout
 }
