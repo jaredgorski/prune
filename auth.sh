@@ -30,17 +30,17 @@ function ghprune_userLogin() {
     ghprune_userHashToken=$(echo $ghprune_githubOAuthLogin | jq '.hashed_token')
 
     ghprune_resetSessionData
-    ghprune_exportUserName "$ghprune_githubUsername"
-    ghprune_exportUserHashToken "$ghprune_userHashToken"
+    ghprune_setSession_userName "$ghprune_githubUsername"
+    ghprune_setSession_userHashToken "$ghprune_userHashToken"
 
     if [[ $#ghprune_userToken -gt 2 ]]
     then
-      ghprune_exportUserToken "$ghprune_userToken"
+      ghprune_setUserToken "$ghprune_userToken"
     fi
 
     source $PRUNEPATH/.token.sh
     source $PRUNEPATH/.session.sh
-    echo "export GHPRUNE_LOGGED_IN=true" >> .session.sh
+    echo "GHPRUNE_LOGGED_IN=true" >> .session.sh
     echo "\nNow logged in as '$GHPRUNE_GITHUB_USER_NAME'."
   else
     echo "\n\tERROR: Already logged in as $GHPRUNE_GITHUB_USER_NAME."
@@ -48,12 +48,12 @@ function ghprune_userLogin() {
   fi
 }
 
-function ghprune_exportUserName() {
-  echo "export GHPRUNE_GITHUB_USER_NAME=\"$1\"" >> .session.sh
+function ghprune_setSession_userName() {
+  echo "GHPRUNE_GITHUB_USER_NAME=\"$1\"" >> .session.sh
 }
 
-function ghprune_exportUserHashToken() {
-  echo "export GHPRUNE_GITHUB_USER_HASH_TOKEN=$1" >> .session.sh
+function ghprune_setSession_userHashToken() {
+  echo "GHPRUNE_GITHUB_USER_HASH_TOKEN=$1" >> .session.sh
 }
 
 function ghprune_resetSessionData() {
@@ -64,7 +64,7 @@ function ghprune_resetSessionData() {
   unset GHPRUNE_LOGGED_IN
 }
 
-function ghprune_exportUserToken() {
+function ghprune_setUserToken() {
   echo "#!/bin/bash\n\nexport GHPRUNE_GITHUB_USER_TOKEN=$1" > .token.sh
 }
 
