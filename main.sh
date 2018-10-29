@@ -9,19 +9,24 @@ function prune() {
     if [[ $ghprune_isRepo ]]
     then
       echo "\n\tERROR: No command received."
-      echo "\n\tusage: $0 [-i, -h, -s, -a, -r, -u, login, logout]"
+      echo "\n\tusage: $0 [-i, -h, -s, -a, -l, -r, -u, login, logout]"
       echo "\n\tFor a list of commands and their uses, type \`prune --help\`\n"
     else
       echo "\n\tERROR: This directory is not a git repository. Please navigate to a git repository in order to use prune locally\n"
     fi
   elif [[ $1 = "login" ]] || [[ $1 = "logout" ]] # Handle Github client authentication commands
   then
-    if [[ $1 = "login" ]]
+    if [[ -v CLIENT_ID ]] && [[ -v CLIENT_SECRET ]]
     then
-      ghprune_handleLogin
-    elif [[ $1 = "logout" ]]
-    then
-      ghprune_handleLogout
+      if [[ $1 = "login" ]]
+      then
+        ghprune_handleLogin
+      elif [[ $1 = "logout" ]]
+      then
+        ghprune_handleLogout
+      fi
+    else
+      echo "\n\tCOMING SOON: The prune Github client is still a work in progress. Stay tuned! ⏳\n"
     fi
   else # Handle unauthenticated commands
     if [[ $ghprune_isRepo ]]
@@ -32,6 +37,7 @@ function prune() {
       ghprune_hardFlag=off
       ghprune_softFlag=off
       ghprune_allFlag=off
+      ghprune_localFlag=off
       ghprune_remoteFlag=off
 
       # Determine whether to handle arguments for local user
@@ -44,6 +50,7 @@ function prune() {
           -h) ghprune_hardFlag=on; ghprune_willHandleLocalArgs=1;;
           -s) ghprune_softFlag=on; ghprune_willHandleLocalArgs=1;;
           -a) ghprune_allFlag=on; ghprune_willHandleLocalArgs=1;;
+          -l) ghprune_localFlag=on; ghprune_willHandleLocalArgs=1;;
           -r) ghprune_remoteFlag=on; ghprune_willHandleLocalArgs=1;;
           -u) ghprune_handleUser "$@"; ghprune_willHandleLocalArgs=0; break;;
           --) shift; break;;
@@ -56,7 +63,7 @@ function prune() {
 
       if [[ $ghprune_willHandleLocalArgs -gt 0 ]]
       then
-        ghprune_handleArgs "$argsEnv" "$ghprune_interactiveFlag" "$ghprune_hardFlag" "$ghprune_softFlag" "$ghprune_allFlag" "$ghprune_remoteFlag"
+        ghprune_handleArgs "$argsEnv" "$ghprune_interactiveFlag" "$ghprune_hardFlag" "$ghprune_softFlag" "$ghprune_allFlag" "$ghprune_localFlag" "$ghprune_remoteFlag"
       fi
     else
       echo "\n\tERROR: This directory is not a git repository. Please navigate to a git repository in order to use prune locally\n"
@@ -65,8 +72,14 @@ function prune() {
 }
 
 function ghprune_handleArgs() {
-  # Under construction ---> localprune.sh?
-  echo "$@"
+  
+  #WIP
+
+  if [[ $6 = "on" ]]
+  then
+    source ./prune.sh
+    ghprune_prunePrunableBranches_local
+  fi
 }
 
 function ghprune_handleUser() {
