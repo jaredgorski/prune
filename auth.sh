@@ -83,13 +83,13 @@ function ghprune_userLogout() {
     echo "\nLogged out successfully."
   else
     echo "\n\tLooks like you're not currently logged into the prune Github client."
-    echo -n "\n\tWould you like to login? [ Enter 'Y' or 'y' for yes, any other character to exit ]: "
+    echo -n "\n\tWould you like to login? [ Yy / Nn ]: "
 
     read ghprune_answer
 
     case ${ghprune_answer:0:1} in
       y|Y) ghprune_userLogin;;
-      *)   echo " ";;
+      *)   echo "\n";;
     esac
   fi
 }
