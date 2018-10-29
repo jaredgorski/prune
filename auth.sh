@@ -2,12 +2,12 @@
 
 function ghprune_userLogin() {
   # Source necessary files
-  source ./.env.sh
+  source $PRUNEPATH/.env.sh
   if [[ -a ".session.sh" ]]
   then
-    source ./.session.sh
+    source $PRUNEPATH/.session.sh
   fi
-  # source ./data.sh ---> to be moved to user document
+  # source $PRUNEPATH/data.sh ---> to be moved to user document
 
   if [[ ! -v GHPRUNE_LOGGED_IN ]]
   then
@@ -38,8 +38,8 @@ function ghprune_userLogin() {
       ghprune_exportUserToken "$ghprune_userToken"
     fi
 
-    source ./.token.sh
-    source ./.session.sh
+    source $PRUNEPATH/.token.sh
+    source $PRUNEPATH/.session.sh
     echo "export GHPRUNE_LOGGED_IN=true" >> .session.sh
     echo "\nNow logged in as '$GHPRUNE_GITHUB_USER_NAME'."
   else
@@ -58,7 +58,7 @@ function ghprune_exportUserHashToken() {
 
 function ghprune_resetSessionData() {
   echo "#!/bin/bash\n" > .session.sh
-  source ./.session.sh
+  source $PRUNEPATH/.session.sh
   unset GHPRUNE_GITHUB_USER_NAME
   unset GHPRUNE_GITHUB_USER_HASH_TOKEN
   unset GHPRUNE_LOGGED_IN
@@ -71,7 +71,7 @@ function ghprune_exportUserToken() {
 function ghprune_userLogout() {
   if [[ -a ".session.sh" ]]
   then
-    source ./.session.sh
+    source $PRUNEPATH/.session.sh
   fi
 
   if [[ -v GHPRUNE_LOGGED_IN ]]
@@ -89,7 +89,7 @@ function ghprune_userLogout() {
 
     case ${ghprune_answer:0:1} in
       y|Y) ghprune_userLogin;;
-      *)   echo "\n";;
+      *)   echo " ";;
     esac
   fi
 }
