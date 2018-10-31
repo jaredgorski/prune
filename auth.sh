@@ -65,7 +65,7 @@ function ghprune_resetSessionData() {
 }
 
 function ghprune_setUserToken() {
-  echo "#!/bin/bash\n\nexport GHPRUNE_GITHUB_USER_TOKEN=$1" > .token.sh
+  echo "#!/bin/bash\n\nGHPRUNE_GITHUB_USER_TOKEN=$1" > .token.sh
 }
 
 function ghprune_userLogout() {
