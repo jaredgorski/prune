@@ -79,7 +79,7 @@ function ghprune_handleArgs() {
 
   if [[ $6 = "on" ]] && [[ $3 = "on" ]]
   then
-    source $PRUNEPATH/prune.sh
+    source $HOME/.gh_prune/prune.sh
     ghprune_prunePrunableBranches_local
   elif [[ $6 = "on" ]]
   then
@@ -107,11 +107,11 @@ function ghprune_handleUser() {
 }
 
 function ghprune_handleLogin() {
-  source $PRUNEPATH/auth.sh
+  source $HOME/.gh_prune/auth.sh
   ghprune_userLogin
 }
 
 function ghprune_handleLogout() {
-  source $PRUNEPATH/auth.sh
+  source $HOME/.gh_prune/auth.sh
   ghprune_userLogout
 }

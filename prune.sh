@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function ghprune_prunePrunableBranches_local() {
-  source $PRUNEPATH/branches.sh
+  source $HOME/.gh_prune/branches.sh
 
   ghprune_branchesToPrune=( $(ghprune_fetchPrunableBranches) )
 
