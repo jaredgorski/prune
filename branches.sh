@@ -1,47 +1,30 @@
 #!/bin/bash
 
 function ghprune_fetchPrunableBranches() {
-  sedVersion=$(sed --version | head -n 1)
+  ghprune_localBranches=( $(ghprune_fetchLocalBranches) )
+  ghprune_remoteBranches=( $(ghprune_fetchRemoteBranches) )
 
-  if [[ $sedVersion =~ "GNU" ]]
-  then
-    ghprune_localBranches=( $(ghprune_fetchLocalBranches) )
-    ghprune_remoteBranches=( $(ghprune_fetchRemoteBranches) )
+  ghprune_prunableBranches=()
 
-    ghprune_prunableBranches=()
+  for localBranch in $ghprune_localBranches
+  do
+    ghprune_hasRemoteMatch=false
 
-    for localBranch in $ghprune_localBranches
+    for remoteBranch in $ghprune_remoteBranches
     do
-      ghprune_hasRemoteMatch=false
-
-      for remoteBranch in $ghprune_remoteBranches
-      do
-        if [[ "$remoteBranch" = "$localBranch" ]]
-        then
-          ghprune_hasRemoteMatch=true
-        fi
-      done
-
-      if [[ $ghprune_hasRemoteMatch = "false" ]]
+      if [[ "$remoteBranch" = "$localBranch" ]]
       then
-        ghprune_prunableBranches+=($localBranch)
+        ghprune_hasRemoteMatch=true
       fi
     done
 
-    echo ${ghprune_prunableBranches[@]}
-  else
-    echo "\n\tNOTICE: This functionality currently only works with \`gnu-sed\` installed. It is available via Homebrew with the command:"
-    echo "\n\t\t$ brew install gnu-sed --default-names\n"
-    echo "\tPlease be sure to include the \`--default-names\` flag, which allows \`gnu-sed\` to use the default \`sed\` command."
-    echo -n "\n\tWould you like me to install it for you? [ Yy / Nn ]: "
+    if [[ $ghprune_hasRemoteMatch = "false" ]]
+    then
+      ghprune_prunableBranches+=($localBranch)
+    fi
+  done
 
-    read ghprune_answer
-
-    case ${ghprune_answer:0:1} in
-      y|Y) brew install gnu-sed --default-names;;
-      *)   echo "\n";;
-    esac
-  fi
+  echo ${ghprune_prunableBranches[@]}
 }
 
 function ghprune_fetchLocalBranches() {
@@ -49,12 +32,12 @@ function ghprune_fetchLocalBranches() {
 
   IFS=$'\n'
 
-  ghprune_localBranches_raw=( $(git branch) )
+  ghprune_localBranches_raw=( $(git branch --no-color) )
 
   for item in ${ghprune_localBranches_raw[@]}
   do
     ghprune_localBranchName_untrimmed=${item##*\]}
-    ghprune_localBranchName=$(echo -e "${ghprune_localBranchName_untrimmed}" | tr -d '[:space:]' | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
+    ghprune_localBranchName=$(echo -e "${ghprune_localBranchName_untrimmed}" | tr -d '[:space:]')
     ghprune_fetchedLocalBranches+=($ghprune_localBranchName)
   done
 
@@ -68,14 +51,14 @@ function ghprune_fetchRemoteBranches() {
 
   IFS=$'\n'
 
-  ghprune_remoteBranches_raw=( $(git branch -r) )
+  ghprune_remoteBranches_raw=( $(git branch -r --no-color) )
 
   for item in ${ghprune_remoteBranches_raw[@]}
   do
     if [ ! $item =~ "HEAD" ] && [ ! $item =~ "->" ]
     then
       ghprune_remoteBranchName_untrimmed=${item##*/}
-      ghprune_remoteBranchName=$(echo -e "${ghprune_remoteBranchName_untrimmed}" | tr -d '[:space:]' | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
+      ghprune_remoteBranchName=$(echo -e "${ghprune_remoteBranchName_untrimmed}" | tr -d '[:space:]')
       ghprune_fetchedRemoteBranches+=($ghprune_remoteBranchName)
     fi
   done
